@@ -4,6 +4,8 @@ from openpyxl import load_workbook
 from zipfile import BadZipFile
 from absl import app
 from flags_config import FLAGS
+import logging
+
 
 def generate_translations_from_en_xx(processed_files_dir):
     """
@@ -17,7 +19,7 @@ def generate_translations_from_en_xx(processed_files_dir):
             continue
 
         file_path = os.path.join(processed_files_dir, file)
-        print("Processing:", file_path)
+        logging.info("Processing:", file_path)
 
         try:
             wb = load_workbook(file_path, read_only=True)
