@@ -1,11 +1,19 @@
+"""
+    This file generates a list of translations from en-xx based on the 'train' partition of each XLSX file in the specified directory.
+    For every row in the 'train' partition, it extracts the 'id' and 'utterance' columns and appends them to a results list.
+"""
+
 import os
 import json
 from openpyxl import load_workbook
 from zipfile import BadZipFile
+import logging
 from absl import app
 from flags_config import FLAGS
 import logging
 
+
+logging.basicConfig(level=logging.INFO)
 
 def generate_translations_from_en_xx(processed_files_dir):
     """
@@ -13,6 +21,8 @@ def generate_translations_from_en_xx(processed_files_dir):
     """
     files = os.listdir(processed_files_dir)
     results = []
+
+    logging.info("Processing Files")
 
     for file in files:
         if not file.endswith('.xlsx'):
@@ -36,7 +46,7 @@ def generate_translations_from_en_xx(processed_files_dir):
                 if row[partition_col_idx] == "train":
                     results.append({"id": row[id_col_idx], "utterance": row[utterance_col_idx]})
         except BadZipFile:
-            print(f"Error: The file {file_path} appears to be corrupted or improperly formatted.")
+            logging.warning(f"Error: The file {file_path} appears to be corrupted or improperly formatted.")
             continue
 
     return results
@@ -49,4 +59,4 @@ translations = generate_translations_from_en_xx(processed_files_dir)
 with open('all_translations.json', 'w', encoding='utf-8') as f:
     json.dump(translations, f, ensure_ascii=False, indent=4)
 
-print('Translations have been saved to all_translations.json')
+logging.info('Translations have been saved to all_translations.json')
